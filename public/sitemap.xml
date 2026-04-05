@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
+  <url><loc>https://cannazen.space/</loc><priority>1.0</priority><changefreq>weekly</changefreq></url>
+  <url><loc>https://cannazen.space/boutique</loc><priority>0.9</priority><changefreq>daily</changefreq></url>
+  <url><loc>https://cannazen.space/boutique?cat=fleurs-cbd</loc><priority>0.8</priority><changefreq>weekly</changefreq></url>
+  <url><loc>https://cannazen.space/boutique?cat=fleurs-d10</loc><priority>0.8</priority><changefreq>weekly</changefreq></url>
+  <url><loc>https://cannazen.space/boutique?cat=fleurs-oh</loc><priority>0.8</priority><changefreq>weekly</changefreq></url>
+  <url><loc>https://cannazen.space/boutique?cat=resines-d10</loc><priority>0.8</priority><changefreq>weekly</changefreq></url>
+  <url><loc>https://cannazen.space/boutique?cat=vapes</loc><priority>0.8</priority><changefreq>weekly</changefreq></url>
+  <url><loc>https://cannazen.space/boutique?cat=huiles-cbd</loc><priority>0.8</priority><changefreq>weekly</changefreq></url>
+  <url><loc>https://cannazen.space/boutique?cat=gummies-d9</loc><priority>0.8</priority><changefreq>weekly</changefreq></url>
+  <url><loc>https://cannazen.space/a-propos</loc><priority>0.6</priority><changefreq>monthly</changefreq></url>
+  <url><loc>https://cannazen.space/cgv</loc><priority>0.3</priority><changefreq>yearly</changefreq></url>
+  <url><loc>https://cannazen.space/mentions-legales</loc><priority>0.3</priority><changefreq>yearly</changefreq></url>
+  <url><loc>https://cannazen.space/politique-de-confidentialite</loc><priority>0.3</priority><changefreq>yearly</changefreq></url>
+</urlset>

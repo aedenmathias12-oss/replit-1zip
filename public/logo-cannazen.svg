@@ -1,0 +1,6 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 240 80" fill="none">
+  <g transform="translate(10, 5)">
+    <path d="M30 65 C30 65 30 45 30 40 C25 48 15 55 8 58 C15 52 22 42 26 35 C18 42 8 46 2 47 C10 42 18 34 24 28 C16 32 6 34 0 34 C8 30 18 24 24 18 C18 20 8 20 2 19 C10 16 20 14 26 12 C22 8 18 2 18 0 C22 4 26 8 30 12 C34 8 38 4 42 0 C42 2 38 8 34 12 C40 14 50 16 58 19 C52 20 42 20 36 18 C42 24 52 30 60 34 C54 34 44 32 36 28 C42 34 50 42 58 47 C52 46 42 42 34 35 C38 42 45 52 52 58 C45 55 35 48 30 40 C30 45 30 65 30 65Z" fill="#2d5016"/>
+  </g>
+  <text x="80" y="52" font-family="'Georgia', serif" font-size="28" font-weight="700" fill="#2d5016" letter-spacing="1">CannaZen</text>
+</svg>

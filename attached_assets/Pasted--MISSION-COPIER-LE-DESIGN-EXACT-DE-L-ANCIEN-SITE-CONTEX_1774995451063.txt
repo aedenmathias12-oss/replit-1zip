@@ -1,0 +1,106 @@
+# MISSION : COPIER LE DESIGN EXACT DE L'ANCIEN SITE
+
+## CONTEXTE
+Le site CannaZen a été reconstruit en Vite+React mais le design est COMPLÈTEMENT DIFFÉRENT de l'original. L'ancien site (build HTML/CSS compilé) est ENCORE dans le projet sous forme d'archives. Tu dois EXTRAIRE l'ancien design et le REPRODUIRE à l'identique.
+
+## ÉTAPE 1 — RETROUVE L'ANCIEN SITE
+
+Cherche dans le projet les archives et fichiers de l'ancien site :
+```bash
+ls -la *.zip *.tar.gz
+ls -la cannazen-hostinger.zip cannazen-vercel.tar.gz cannazen-vercel/ CANNAZEN_FINAL.tar.gz
+```
+
+Extrais la plus complète (probablement cannazen-hostinger.zip ou CANNAZEN_FINAL.tar.gz) dans un dossier temporaire :
+```bash
+mkdir /tmp/old-site
+# Si zip :
+unzip cannazen-hostinger.zip -d /tmp/old-site
+# Si tar.gz :
+tar xzf CANNAZEN_FINAL.tar.gz -C /tmp/old-site
+```
+
+## ÉTAPE 2 — ÉTUDIE CHAQUE DÉTAIL DU DESIGN ORIGINAL
+
+Ouvre et lis ATTENTIVEMENT :
+1. Le fichier index.html principal — note le HTML exact du header, hero, sections, footer
+2. TOUS les fichiers CSS — note CHAQUE couleur, font, taille, espacement, bordure, ombre
+3. Les images et le logo — copie-les dans public/
+4. Les fonts utilisées (Google Fonts ou locales)
+
+Note PRÉCISÉMENT :
+- La couleur exacte du fond (hex)
+- La couleur exacte du header (hex)  
+- La couleur exacte des boutons (hex)
+- La couleur exacte du texte (hex)
+- Les fonts exactes (nom, poids, taille)
+- Le style exact du logo (image ? SVG ? texte stylisé ?)
+- Le bandeau défilant exact (texte, couleurs, vitesse)
+- Le style exact des cards produits
+- Le style exact de la page connexion
+- Le style exact du footer
+
+## ÉTAPE 3 — COPIE LE LOGO ET LES ASSETS
+
+```bash
+# Copie TOUS les assets de l'ancien site
+cp -r /tmp/old-site/images/* public/images/ 2>/dev/null
+cp -r /tmp/old-site/assets/* public/assets/ 2>/dev/null
+cp -r /tmp/old-site/public/* public/ 2>/dev/null
+# Cherche le logo partout
+find /tmp/old-site -name "logo*" -o -name "*.svg" -o -name "favicon*" | head -20
+```
+
+Si le logo est une image (PNG/SVG), copie-le tel quel dans public/ et utilise-le dans le header. NE CRÉE PAS un nouveau logo. Utilise L'ORIGINAL.
+
+## ÉTAPE 4 — APPLIQUE LE DESIGN EXACT
+
+Maintenant, modifie le site Vite+React actuel pour reproduire PIXEL PAR PIXEL le design original :
+
+### CSS Global (index.css ou App.css)
+Copie les MÊMES variables CSS, les MÊMES couleurs, les MÊMES fonts. Ne change RIEN. Si l'ancien site utilisait des Google Fonts spécifiques, importe-les dans index.html.
+
+### Header
+Reproduis le MÊME header : même logo, même position, mêmes couleurs, même menu hamburger, mêmes icônes (recherche, compte, panier), même bandeau défilant avec le MÊME texte.
+
+### Page d'accueil
+Reproduis le MÊME hero avec "L'univers de Marie Jeanne..." (ou le texte exact qui était sur l'ancien site). Mêmes sections, même ordre, même style.
+
+### Page connexion  
+Reproduis la MÊME page connexion : même card, même fond, même style de formulaire, mêmes boutons. C'était un fond clair/crème avec une card centrée, bouton Google, champs email/mdp, bouton vert "Se connecter".
+
+### Footer
+Reproduis le MÊME footer exactement.
+
+### Cards produits
+Reproduis le MÊME style de cards : même border-radius, même ombre, même position du badge, même style de prix.
+
+## ÉTAPE 5 — AJOUTE CE QUI MANQUAIT (SANS CHANGER LE DESIGN)
+
+En gardant le design IDENTIQUE, ajoute ce qui ne fonctionnait pas avant :
+
+1. Firebase Auth FONCTIONNEL (Google + Email) — même page connexion, même style, mais les boutons marchent maintenant
+2. Les 28 produits du catalogue dans le même style de cards
+3. Le panier fonctionnel dans le même style de drawer
+4. Le checkout avec les options de livraison :
+   - Colissimo domicile : 4.90€ (gratuit dès 49€), 2-3 jours
+   - Chronopost Express 24h : 9.90€
+   - Point Relais Mondial Relay : 3.90€ (gratuit dès 39€)
+5. Les moyens de paiement :
+   - Carte bancaire (PayGreen — mode sandbox si pas de clés)
+   - Virement bancaire (IBAN LU61 6060 0020 0000 5401)
+6. Le Smokellier chatbot (même style que le site, pas vert fluo)
+7. Les pages légales (CGV, mentions, confidentialité)
+8. Les rubriques par molécule dans le menu (Fleurs CBD, Fleurs D10, Fleurs OH+, Résines, Vapes, Huiles, Gummies)
+
+## VÉRIFICATION
+
+1. Compare visuellement l'ancien site (dans /tmp/old-site) avec le nouveau — ils doivent être IDENTIQUES visuellement
+2. npm run build sans erreur
+3. Le logo est LE MÊME que l'ancien
+4. Les couleurs sont LES MÊMES
+5. Les fonts sont LES MÊMES
+6. Le layout est LE MÊME
+7. Les nouvelles fonctionnalités (auth, panier, checkout) utilisent LE MÊME style
+
+SI TU NE TROUVES PAS LES ANCIENS FICHIERS, dis-le moi AVANT de continuer. Ne crée PAS un nouveau design.

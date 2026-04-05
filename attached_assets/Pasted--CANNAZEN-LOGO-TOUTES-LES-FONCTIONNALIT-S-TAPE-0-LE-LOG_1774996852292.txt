@@ -1,0 +1,229 @@
+# CANNAZEN — LOGO + TOUTES LES FONCTIONNALITÉS
+
+## ÉTAPE 0 — LE LOGO
+
+Le fichier public/logo-cannazen.png est le logo officiel CannaZen. C'est une feuille de cannabis néon vert sur fond sombre avec un halo violet.
+
+Place ce logo en HAUT CENTRE du header :
+- Centré horizontalement dans le header
+- Taille : environ 60px de hauteur sur desktop, 45px sur mobile
+- Le texte "CannaZen" apparaît EN DESSOUS ou À CÔTÉ du logo en font élégante
+- Le menu hamburger reste à GAUCHE
+- Les icônes (recherche, compte, panier) restent à DROITE
+- Le logo est cliquable → retour accueil
+
+Utilise aussi ce logo :
+- Comme image dans l'age gate (vérification 18+)
+- Dans le footer
+- En og:image pour le SEO
+
+## DESIGN DU SITE
+
+Le design doit être cohérent avec le logo (dark + néon vert + touches violet) :
+
+- **Fond principal** : #0a0a0a (noir profond)
+- **Fond cards/sections** : #111111
+- **Fond header** : #0a0a0a ou transparent avec blur
+- **Bordures** : #222222
+- **Texte principal** : #ffffff
+- **Texte secondaire** : #999999
+- **Accent principal** : #00ff66 (vert néon, comme le logo)
+- **Accent secondaire** : #9333EA (violet, comme le halo du logo)
+- **Boutons principaux** : gradient de #00cc55 à #00ff66
+- **Boutons hover** : glow vert néon (box-shadow 0 0 20px rgba(0,255,102,0.3))
+- **Badges** : fond violet #9333EA ou vert néon selon contexte
+
+Bandeau défilant en haut :
+- Fond vert néon #00ff66, texte noir
+- Texte : "Livraison offerte dès 49€ • THC < 0.3% • 100% Légal • Cannabis d'exception cultivé avec soin • Livraison offerte dès 49€ • Gamme exclusive"
+
+Page d'accueil — Hero :
+- Fond : dégradé noir vers violet foncé (comme le fond du logo)
+- Le logo en grand au centre
+- Texte : **"L'univers de Marie Jeanne..."** en font serif élégante, blanc, grande taille
+- Sous-texte : "Cannabis légal premium • Fleurs • Résines • Vapes • Huiles"
+- Bouton CTA : "Découvrir la boutique" en vert néon
+
+## NAVIGATION PAR MOLÉCULE
+
+Menu principal dans le header (desktop = barre horizontale, mobile = menu hamburger) :
+
+- **Accueil**
+- **Fleurs** → dropdown : Fleurs CBD | Fleurs D10 (Delta-10) | Fleurs OH+ (Hydroxy-HHC) | Small Buds
+- **Résines** → Résines D10
+- **Vapes** → Vapes OH+ 99% | Vapes HEC10 99%
+- **Huiles CBD** → Huiles Full Spectrum BIO
+- **Gummies** → Gummies D9 Cookies®
+- **Nouveautés** (badge "NEW" rouge)
+
+Section catégories sur l'accueil (cards cliquables avec emoji et glow au hover) :
+- 🌿 Fleurs CBD — "Classiques et premium"
+- 💎 Fleurs D10 — "Delta-10 enrichies 50-60%"
+- ⚡ Fleurs OH+ — "Hydroxy-HHC 30%"
+- 🧱 Résines D10 — "Extraits secs enrichis"
+- 💨 Vapes — "OH+ & HEC10 99%"
+- 🫧 Huiles CBD — "Full Spectrum BIO"
+- 🍬 Gummies D9 — "Cookies® Delta-9 légal"
+
+## LES 28 PRODUITS
+
+Les produits sont dans data/products.ts. Vérifie qu'ils sont TOUS affichés. Si le fichier n'existe plus, recrée-le avec ces produits exactement :
+
+### Gummies D9 (2)
+1. Cookies® D9 Cereal Milk — boîte 10 sachets — 24.90€
+2. Cookies® D9 Huckleberry Gelato — boîte 10 sachets — 24.90€
+
+### Fleurs CBD (6)
+3. Tropical Punch — 4.90€/g
+4. Amnesia Haze Premium — 7.90€/g
+5. Runtz — 4.90€/g
+6. Mint Kush — 7.90€/g
+7. Small Buds Double Cinnamon — 2.90€/g (à partir de 5g : 9.90€)
+8. Fat Banana — 5.90€/g
+
+### Fleurs D10 (6)
+9. Wapanga 50% D10 — 8.90€/g
+10. Zoap 50% D10 — 10.90€/g
+11. White Widow 50% D10 — 10.90€/g
+12. Soul Assassin 50% D10 — 7.90€/g
+13. Royal Dwarf 50% D10 — 6.90€/g
+14. Snow White 60% D10 — 9.90€/g
+
+### Résines D10 (2)
+15. Silk Road 50% D10 — 8.90€/g
+16. Atlas Cargo 50% D10 — 8.90€/g
+
+### Fleurs OH+ (2)
+17. Early Girl 30% OH+ — 8.90€/g
+18. Oreoz 30% OH+ — 9.90€/g
+
+### Vapes OH+ (4)
+19. Vape 2ml 99% OH+ Cherry Sour — 34.90€
+20. Vape 2ml 99% OH+ Cotton Candy — 34.90€
+21. Vape 2ml 99% OH+ Kiwi Sorbet — 34.90€
+22. Vape 2ml 99% OH+ Lemon Cheese — 34.90€
+
+### Vapes HEC10 (4)
+23. Vape 2ml 99% HEC10 Cherry Sour — 34.90€
+24. Vape 2ml 99% HEC10 Cotton Candy — 34.90€
+25. Vape 2ml 99% HEC10 Kiwi Sorbet — 34.90€
+26. Vape 2ml 99% HEC10 Lemon Cheese — 34.90€
+
+### Huiles CBD BIO (2)
+27. Huile Full Spectrum 20% BIO 10ml — 39.90€
+28. Huile Full Spectrum 30% BIO 10ml — 49.90€
+
+Grammages disponibles pour les fleurs : 1g, 3g, 5g, 10g, 50g (small buds : 5g, 10g, 25g, 50g, 100g)
+
+## FIREBASE AUTH
+
+Le fichier lib/firebase.ts DOIT être robuste :
+- Si les clés Firebase sont dans les Secrets → tout fonctionne (Google + Email)
+- Si les clés ne sont PAS là → le site ne crashe PAS, les boutons affichent un toast "Configurez Firebase dans les Secrets"
+- SUPPRIME tout message "La connexion sera bientôt disponible"
+- La page /connexion a : bouton Google, formulaire email/mdp, onglet inscription
+- Design de la page connexion : card fond #111111, bordure #222, inputs fond #1a1a1a bordure #333, boutons vert néon
+- Après connexion → redirect accueil
+- Header : si connecté → avatar + dropdown (Mon compte, Mes commandes, Déconnexion)
+
+## PANIER
+
+- CartContext avec localStorage persistant (clé "cannazen-cart")
+- Drawer slide-in depuis la droite
+- Items avec : image, nom, grammage, qté modifiable +/-, prix, bouton supprimer
+- Sous-total, frais de livraison (gratuit dès 49€ sinon 4.90€), total
+- Bouton "Commander" → /checkout
+- Design : fond #0a0a0a, items en cards #111111
+
+## CHECKOUT
+
+Page /checkout avec 2 colonnes (1 sur mobile) :
+
+### Colonne gauche — Formulaire
+1. **Informations** : Prénom, Nom, Email, Téléphone (pré-rempli si connecté)
+2. **Livraison** — 3 options radio :
+   - 📦 Colissimo domicile — 4.90€ (GRATUIT dès 49€) — 2-3 jours
+   - ⚡ Chronopost Express 24h — 9.90€
+   - 📍 Point Relais Mondial Relay — 3.90€ (GRATUIT dès 39€) — 3-5 jours
+   - Sous les options : "Expédition sous 24h • Emballage discret et hermétique"
+3. **Adresse** : Rue, Complément, Code postal, Ville, Pays=France
+4. **Paiement** — 3 options :
+   - 💳 Carte bancaire (PayGreen) — Si pas de clé → mode sandbox (bandeau jaune "MODE TEST — Paiements simulés")
+   - 🏦 Virement bancaire — Après confirmation affiche : IBAN LU61 6060 0020 0000 5401, BIC OLKILUL1XXX
+   - 💶 Paiement en 3x (bientôt disponible)
+
+### Colonne droite — Récap commande
+- Liste items avec mini-image, nom, grammage, qté, prix
+- Sous-total, livraison, total en gras vert néon
+- Bouton "Confirmer la commande" vert néon pleine largeur
+
+### Après confirmation
+- Commande sauvée en Firestore (si connecté) ou localStorage
+- Numéro CZ-XXXX
+- Page confirmation avec icône ✓ animée
+- Boutons "Voir mes commandes" + "Retour boutique"
+
+## LE SMOKELLIER — CHATBOT
+
+Widget chat flottant bas-droite :
+- Bouton rond 56px, fond gradient vert néon → violet, icône message
+- Fenêtre chat 380x500px (full-width mobile)
+- Header : "Le Smokellier 💨" fond #111111, badge "En ligne" vert
+- Messages bot : fond #1a1a1a, messages user : fond vert néon avec texte noir
+- Fonctionne SANS clé API avec réponses pré-programmées par mots-clés :
+  - détente/relax/sommeil → Mint Kush, Oreoz OH+, huiles
+  - puissant/fort → Zoap D10, Snow White D10, vapes OH+
+  - pas cher/budget → Small Buds, Tropical Punch, Runtz
+  - gummy/bonbon → Cookies® D9
+  - vape → les 8 vapes
+  - huile → les 2 huiles Trycome
+  - résine/hash → Silk Road, Atlas Cargo
+  - d10 → gamme D10
+  - oh+ → gamme OH+
+  - débutant/cbd → Tropical Punch, Runtz, huile 20%
+  - top/meilleur → Zoap D10, Oreoz OH+, Amnesia, Cookies®
+  - livraison → Colissimo/Chronopost/Mondial Relay
+- Mini-cards produits cliquables sous les réponses
+- 4 boutons suggestion au lancement : "🌿 Fleurs", "💎 D10", "💨 Vapes", "🤔 Conseille-moi"
+
+## AGE GATE
+
+Modal plein écran au premier visit :
+- Fond noir avec le logo CannaZen (logo-cannazen.png) en grand au centre
+- "Avez-vous plus de 18 ans ?"
+- Bouton "Oui, entrer" vert néon
+- Bouton "Non" gris → redirige google.com
+- Stocke en localStorage pour ne pas redemander
+
+## PAGES LÉGALES
+
+/cgv, /mentions-legales, /politique-de-confidentialite avec contenu RÉEL :
+- CannaZen — Benkiran Hatim
+- 11 rue de Tourraine, 67100 Strasbourg, France
+- contact@cannazen.space
+
+## FOOTER
+
+- Logo CannaZen (logo-cannazen.png)
+- 4 colonnes : Navigation | Catégories | Informations légales | Contact
+- "© 2026 CannaZen — Tous droits réservés"
+- "Cannabis légal • THC < 0.3% • Livraison France"
+- Icônes : CB, Visa, Mastercard, Virement
+- Design : fond #0a0a0a, bordure top #222
+
+## VÉRIFICATIONS OBLIGATOIRES
+
+1. npm run build → ZÉRO erreur
+2. Le logo logo-cannazen.png est CENTRÉ en haut du header
+3. Design dark + néon vert + violet (cohérent avec le logo)
+4. "L'univers de Marie Jeanne..." est sur l'accueil
+5. Les 28 produits sont affichés avec les bons prix
+6. Menu avec rubriques par molécule (CBD, D10, OH+, HEC10, D9)
+7. Panier fonctionne
+8. Checkout avec 3 livraisons + 3 paiements
+9. Auth fonctionne (pas de "bientôt disponible")
+10. Smokellier répond aux questions
+11. Age gate au premier visit
+12. Pages légales avec vrai contenu
+13. Responsive mobile
+14. Aucune erreur console

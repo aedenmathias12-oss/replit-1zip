@@ -1,0 +1,135 @@
+# CORRECTION URGENTE — CANNAZEN
+
+## LE PROBLÈME
+Tu as reconstruit le site mais tu as PERDU le design original. Le site actuel est générique et vert fluo. Il faut TOUT corriger.
+
+## RÈGLE N°1 : LE DESIGN ORIGINAL
+
+Le site original avait ce design — REPRODUIS-LE EXACTEMENT :
+
+- Fond principal : blanc/crème (PAS noir, PAS vert fluo)
+- Header : fond blanc avec logo "CannaZen" en vert foncé, menu hamburger à gauche, icônes recherche/compte/panier à droite
+- Bandeau promo vert : "Livraison offerte dès 49€ • THC < 0.3% • 100% Légal • Cannabis d'exception cultivé avec soin • Livraison offerte dès 49€ • Gamme ..." qui défile
+- Boutons principaux : vert foncé (#2d5016 ou similaire), PAS vert fluo
+- Style : élégant, premium, épuré — PAS street/fluo
+- La phrase de bienvenue sur la page d'accueil est : **"L'univers de Marie Jeanne..."** (c'est le nom artistique de la marque CannaZen)
+
+## RÈGLE N°2 : LOGO SVG ORIGINAL
+
+Crée un fichier SVG pour le logo CannaZen : une **feuille de cannabis stylisée et originale** :
+- Feuille de cannabis vue de face avec 7 folioles (feuilles pointues)
+- Style minimaliste et élégant (trait fin ou silhouette pleine)
+- Couleur vert foncé (#2d5016)
+- Sous la feuille, le texte "CannaZen" en typographie élégante serif
+- Le logo doit être UNIQUE et PREMIUM, pas un clipart générique
+- Sauvegarde en public/logo-cannazen.svg et utilise-le dans le header et le footer
+- Crée aussi une version favicon (feuille seule, 32x32) en public/favicon.svg
+
+## RÈGLE N°3 : NAVIGATION PAR MOLÉCULE
+
+Le menu principal doit avoir des rubriques par molécule ET par type, comme les vrais sites CBD (Sixty8, Gardenz, Le Lab Shop) :
+
+Menu desktop (header) :
+- **Accueil**
+- **Fleurs** → sous-menu : Fleurs CBD, Fleurs D10, Fleurs OH+, Small Buds
+- **Résines** → sous-menu : Résines D10
+- **Vapes** → sous-menu : Vapes OH+, Vapes HEC10
+- **Huiles** → Huiles CBD BIO
+- **Gummies** → Gummies D9 Cookies®
+- **Nouveautés** (badge rouge)
+- **Promos** (si applicable)
+
+Sur la page d'accueil, affiche les catégories en CARDS visuelles cliquables :
+- 🌿 Fleurs CBD
+- 💎 Fleurs D10
+- ⚡ Fleurs OH+
+- 🧱 Résines D10
+- 💨 Vapes OH+ & HEC10
+- 🫧 Huiles CBD BIO
+- 🍬 Gummies D9
+
+## RÈGLE N°4 : LES 28 PRODUITS
+
+Les 28 produits sont DÉJÀ dans data/products.ts. VÉRIFIE qu'ils sont tous affichés correctement dans la boutique avec :
+- Photo placeholder (SVG avec nom du produit et couleur de catégorie)
+- Badge (COOKIES®, PREMIUM, TOP-SHELF, D10 50%, OH+ 30%, etc.)
+- Prix par grammage (sélecteur : 1g, 3g, 5g, 10g...)
+- Note étoiles + nb avis
+- Bouton "Ajouter au panier"
+- Sur la fiche produit : description, effets (tags), intensité (barres), citation du Smokellier
+
+## RÈGLE N°5 : AUTH QUI FONCTIONNE
+
+SUPPRIME le message "La connexion sera bientôt disponible". La page /connexion doit :
+
+Si Firebase est configuré (clés dans Secrets) :
+- Bouton "Continuer avec Google" → FONCTIONNE (signInWithPopup)
+- Formulaire email/mdp → FONCTIONNE (signInWithEmailAndPassword)
+- Onglet Inscription → FONCTIONNE (createUserWithEmailAndPassword)
+- Erreurs en français sous les champs
+
+Si Firebase N'EST PAS configuré :
+- Les boutons sont cliquables
+- Au clic → message toast : "Connexion indisponible — configurez Firebase dans les Secrets Replit"
+- PAS de message permanent, PAS de bannière, PAS de texte "bientôt disponible"
+
+## RÈGLE N°6 : LIVRAISON (INSPIRÉ DES MEILLEURS SITES CBD)
+
+Sur le checkout, proposer ces options de livraison :
+
+1. **Colissimo domicile** — 4.90€ (GRATUIT dès 49€) — Délai 2-3 jours ouvrés
+2. **Chronopost Express 24h** — 9.90€ — Livraison lendemain avant 13h
+3. **Point Relais (Mondial Relay)** — 3.90€ (GRATUIT dès 39€) — Délai 3-5 jours
+
+Affiche sous les options :
+- 📦 Expédition sous 24h
+- 🔒 Emballage 100% discret et hermétique
+- 📬 Suivi de commande par email
+
+## RÈGLE N°7 : PAIEMENT
+
+Options de paiement sur le checkout :
+1. **💳 Carte bancaire** (via PayGreen / OVRI) — Si pas de clé API → mode sandbox avec bandeau jaune "MODE TEST"
+2. **🏦 Virement bancaire** — Affiche l'IBAN après confirmation : IBAN LU61 6060 0020 0000 5401, BIC OLKILUL1XXX, référence = n° commande
+3. **💶 Paiement en 3x sans frais** (Klarna) — Mention "Bientôt disponible" pour l'instant
+
+## RÈGLE N°8 : LE SMOKELLIER
+
+Le chatbot Le Smokellier DOIT fonctionner avec les réponses pré-programmées (PAS besoin de clé API). Vérifie que :
+- Le bouton flottant en bas à droite est visible
+- Au clic il s'ouvre avec un message d'accueil
+- Les suggestions cliquables sont affichées
+- Quand le user tape un mot-clé (détente, vape, puissant, etc.) → réponse pertinente avec mini-cards produits
+- Le design est cohérent avec le site (PAS vert fluo)
+
+## RÈGLE N°9 : PAGES LÉGALES ET FOOTER
+
+Footer avec :
+- Logo CannaZen (le SVG créé)
+- Colonnes : Navigation, Catégories, Informations, Contact
+- Liens : CGV, Mentions légales, Politique de confidentialité
+- "© 2026 CannaZen — Tous droits réservés"
+- "Cannabis légal • THC < 0.3% • Livraison France métropolitaine"
+- Icônes paiement : CB, Visa, Mastercard, Virement
+
+Pages légales avec contenu RÉEL :
+- Raison sociale : CannaZen — Benkiran Hatim
+- 11 rue de Tourraine, 67100 Strasbourg
+- contact@cannazen.space
+
+## RÈGLE N°10 : VÉRIFICATIONS
+
+1. npm run build → ZÉRO erreur
+2. Le site ressemble au design ORIGINAL (fond clair, vert foncé, élégant)
+3. La phrase "L'univers de Marie Jeanne..." est sur la page d'accueil
+4. Le logo SVG feuille de cannabis est dans le header
+5. Les 28 produits sont affichés avec les bons prix
+6. Le panier fonctionne (ajouter, modifier qté, supprimer, total)
+7. La page connexion fonctionne (pas de message "bientôt disponible")
+8. Le Smokellier répond aux questions
+9. Le checkout affiche les 3 options de livraison et les moyens de paiement
+10. Toutes les pages sont responsive mobile
+11. Aucune erreur console navigateur
+12. Age Gate 18+ au premier visit
+
+FAIS TOUT. NE SAUTE RIEN. MONTRE-MOI LE RÉSULTAT FINAL.

@@ -1,0 +1,737 @@
+# 🔥 CANNAZEN — RECONSTRUCTION COMPLÈTE VITE + REACT
+
+## MISSION
+Le projet actuel est un build figé (HTML/CSS/JS compilé + Ecwid). Il faut le RECRÉER from scratch en Vite + React + TypeScript. Le design existant DOIT être préservé : dark theme, accents verts, CannaZen branding. Ecwid est SUPPRIMÉ et remplacé par un catalogue interne.
+
+## ÉTAPE 0 — CRÉER LE PROJET VITE + REACT
+
+Crée un nouveau projet Vite + React + TypeScript :
+```bash
+npm create vite@latest . -- --template react-ts
+npm install
+npm install react-router-dom firebase tailwindcss @tailwindcss/vite lucide-react
+```
+
+Configure Tailwind dans vite.config.ts :
+```typescript
+import { defineConfig } from 'vite'
+import react from '@vitejs/plugin-react'
+import tailwindcss from '@tailwindcss/vite'
+
+export default defineConfig({
+  plugins: [react(), tailwindcss()],
+})
+```
+
+Dans le fichier CSS principal, ajoute :
+```css
+@import "tailwindcss";
+```
+
+## DESIGN SYSTEM
+
+Couleurs :
+- Background principal : #0a0a0a (noir profond)
+- Cards/sections : #111111
+- Bordures : #222222
+- Texte principal : #ffffff
+- Texte secondaire : #888888
+- Accent principal : #22c55e (vert, pour les boutons principaux, comme vu sur le site actuel)
+- Accent hover : #16a34a
+- Accent secondaire : #9333EA (violet, pour badges et détails)
+- Erreurs : #ef4444
+- Warnings : #f59e0b
+- Success : #22c55e
+
+Fonts :
+- Titres : system-ui ou "DM Serif Display" (si disponible via Google Fonts)
+- Corps : system-ui ou "Plus Jakarta Sans"
+
+Bordure radius : 12px pour les cards, 8px pour les inputs/boutons
+
+## STRUCTURE DU PROJET
+
+```
+src/
+├── main.tsx
+├── App.tsx
+├── index.css
+├── data/
+│   └── products.ts          ← Les 28 produits
+├── lib/
+│   ├── firebase.ts           ← Config Firebase (robuste)
+│   ├── AuthContext.tsx        ← Auth provider
+│   ├── CartContext.tsx        ← Panier provider
+│   └── paymentService.ts     ← PayGreen
+├── components/
+│   ├── layout/
+│   │   ├── Header.tsx        ← Navbar responsive
+│   │   ├── Footer.tsx        ← Footer complet
+│   │   ├── AgeGate.tsx       ← Vérification 18+
+│   │   └── MobileMenu.tsx    ← Menu hamburger
+│   ├── shop/
+│   │   ├── ProductCard.tsx   ← Card produit grille
+│   │   ├── ProductGrid.tsx   ← Grille avec filtres
+│   │   ├── CategoryFilter.tsx
+│   │   └── SearchBar.tsx
+│   ├── cart/
+│   │   ├── CartDrawer.tsx    ← Drawer latéral panier
+│   │   └── CartItem.tsx
+│   ├── auth/
+│   │   ├── AuthModal.tsx     ← Modal connexion/inscription
+│   │   └── ProtectedRoute.tsx
+│   ├── checkout/
+│   │   ├── CheckoutForm.tsx
+│   │   └── OrderSummary.tsx
+│   ├── smokellier/
+│   │   ├── ChatWidget.tsx    ← Chatbot flottant
+│   │   ├── ChatMessage.tsx
+│   │   └── ProductSuggestion.tsx
+│   └── ui/
+│       ├── Toast.tsx
+│       └── Badge.tsx
+├── pages/
+│   ├── Home.tsx
+│   ├── Shop.tsx              ← /boutique
+│   ├── ProductDetail.tsx     ← /boutique/:slug
+│   ├── Login.tsx             ← /connexion
+│   ├── Account.tsx           ← /compte
+│   ├── Orders.tsx            ← /compte/commandes
+│   ├── Checkout.tsx          ← /checkout
+│   ├── Confirmation.tsx      ← /checkout/confirmation/:id
+│   ├── About.tsx             ← /a-propos
+│   ├── CGV.tsx               ← /cgv
+│   ├── Legal.tsx             ← /mentions-legales
+│   └── Privacy.tsx           ← /politique-de-confidentialite
+└── assets/
+```
+
+## LES 28 PRODUITS — data/products.ts
+
+COPIE CE FICHIER TEL QUEL. Ce sont les produits réels du devis Green Brothers #68150. Les prix sont les prix de VENTE client, PAS les prix d'achat.
+
+```typescript
+export interface Product {
+  id: number;
+  name: string;
+  slug: string;
+  category: string;
+  categorySlug: string;
+  description: string;
+  shortDesc: string;
+  effects: string[];
+  smokellierQuote: string;
+  badge?: string;
+  rating: number;
+  reviewCount: number;
+  intensity: number;
+  image: string;
+  prices: { label: string; amount: number; grams?: number }[];
+  inStock: boolean;
+  isNew?: boolean;
+  isBestSeller?: boolean;
+}
+
+export const products: Product[] = [
+  {
+    id: 1, name: "Cookies® D9 Gummies - Cereal Milk", slug: "cookies-d9-cereal-milk",
+    category: "Gummies D9", categorySlug: "gummies-d9",
+    description: "Gummies officiels Cookies® au Delta-9 THC légal. Saveur Cereal Milk gourmande et lactée. 10 sachets par boîte, dosage précis 10mg par gummy.",
+    shortDesc: "Gummies D9 officiels Cookies® — Cereal Milk",
+    effects: ["Relaxation", "Euphorie", "Bien-être"],
+    smokellierQuote: "Le Cereal Milk de Cookies... quand le petit-déjeuner devient premium.",
+    badge: "COOKIES®", rating: 4.8, reviewCount: 67, intensity: 3,
+    image: "/placeholder-product.svg",
+    prices: [{ label: "Boîte 10 sachets", amount: 24.90 }],
+    inStock: true, isNew: true, isBestSeller: true,
+  },
+  {
+    id: 2, name: "Cookies® D9 Gummies - Huckleberry Gelato", slug: "cookies-d9-huckleberry",
+    category: "Gummies D9", categorySlug: "gummies-d9",
+    description: "Gummies officiels Cookies® au Delta-9 THC légal. Saveur Huckleberry Gelato fruitée et glacée. 10 sachets par boîte.",
+    shortDesc: "Gummies D9 officiels Cookies® — Huckleberry Gelato",
+    effects: ["Relaxation", "Euphorie", "Créativité"],
+    smokellierQuote: "L'Huckleberry Gelato... un dessert glacé qui te met sur orbite.",
+    badge: "COOKIES®", rating: 4.7, reviewCount: 52, intensity: 3,
+    image: "/placeholder-product.svg",
+    prices: [{ label: "Boîte 10 sachets", amount: 24.90 }],
+    inStock: true, isNew: true,
+  },
+  {
+    id: 3, name: "Tropical Punch", slug: "tropical-punch",
+    category: "Fleur CBD", categorySlug: "fleurs-cbd",
+    description: "Fleur CBD outdoor aux notes tropicales et fruitées. Arômes de mangue, ananas et agrumes. Idéale pour la détente quotidienne à petit prix.",
+    shortDesc: "Fleur CBD outdoor fruitée et tropicale",
+    effects: ["Détente", "Bonne humeur", "Anti-stress"],
+    smokellierQuote: "Tropical Punch — un cocktail de soleil dans chaque tête.",
+    rating: 4.2, reviewCount: 38, intensity: 2,
+    image: "/placeholder-product.svg",
+    prices: [
+      { label: "1g", amount: 4.90, grams: 1 }, { label: "3g", amount: 12.90, grams: 3 },
+      { label: "5g", amount: 19.90, grams: 5 }, { label: "10g", amount: 34.90, grams: 10 },
+      { label: "50g", amount: 149.00, grams: 50 },
+    ],
+    inStock: true,
+  },
+  {
+    id: 4, name: "Amnesia Haze Premium", slug: "amnesia-haze-premium",
+    category: "Fleur CBD", categorySlug: "fleurs-cbd",
+    description: "Amnesia Haze en version CBD indoor premium. Notes intenses de citron, encens et haze. Trichomes abondants.",
+    shortDesc: "Amnesia Haze CBD indoor premium",
+    effects: ["Énergie", "Focus", "Créativité"],
+    smokellierQuote: "L'Amnesia Premium... tu oublieras tout sauf le plaisir.",
+    badge: "PREMIUM", rating: 4.6, reviewCount: 89, intensity: 3,
+    image: "/placeholder-product.svg",
+    prices: [
+      { label: "1g", amount: 7.90, grams: 1 }, { label: "3g", amount: 19.90, grams: 3 },
+      { label: "5g", amount: 34.90, grams: 5 }, { label: "10g", amount: 59.90, grams: 10 },
+      { label: "50g", amount: 249.00, grams: 50 },
+    ],
+    inStock: true, isBestSeller: true,
+  },
+  {
+    id: 5, name: "Runtz", slug: "runtz",
+    category: "Fleur CBD", categorySlug: "fleurs-cbd",
+    description: "Fleur CBD greenhouse Runtz. Arômes sucrés de bonbon et fruits. Buds colorés verts et violets.",
+    shortDesc: "Fleur CBD greenhouse sucrée et fruitée",
+    effects: ["Détente", "Bonne humeur", "Relaxation"],
+    smokellierQuote: "Runtz — c'est du bonbon, mais version zen.",
+    rating: 4.3, reviewCount: 45, intensity: 2,
+    image: "/placeholder-product.svg",
+    prices: [
+      { label: "1g", amount: 4.90, grams: 1 }, { label: "3g", amount: 12.90, grams: 3 },
+      { label: "5g", amount: 19.90, grams: 5 }, { label: "10g", amount: 34.90, grams: 10 },
+      { label: "50g", amount: 149.00, grams: 50 },
+    ],
+    inStock: true,
+  },
+  {
+    id: 6, name: "Mint Kush", slug: "mint-kush",
+    category: "Fleur CBD", categorySlug: "fleurs-cbd",
+    description: "Fleur CBD indoor Mint Kush. Notes fraîches de menthe poivrée et kush terreuse. Buds denses et résineux.",
+    shortDesc: "Fleur CBD indoor menthe et kush",
+    effects: ["Relaxation profonde", "Fraîcheur", "Sommeil"],
+    smokellierQuote: "Mint Kush — la fraîcheur d'un glacier, la puissance d'un kush.",
+    badge: "PREMIUM", rating: 4.5, reviewCount: 61, intensity: 4,
+    image: "/placeholder-product.svg",
+    prices: [
+      { label: "1g", amount: 7.90, grams: 1 }, { label: "3g", amount: 19.90, grams: 3 },
+      { label: "5g", amount: 34.90, grams: 5 }, { label: "10g", amount: 59.90, grams: 10 },
+      { label: "50g", amount: 249.00, grams: 50 },
+    ],
+    inStock: true,
+  },
+  {
+    id: 7, name: "Small Buds Double Cinnamon", slug: "small-buds-double-cinnamon",
+    category: "Small Buds", categorySlug: "fleurs-cbd",
+    description: "Small buds CBD Double Cinnamon. Petites têtes à la cannelle douce. Rapport qualité-prix exceptionnel.",
+    shortDesc: "Small buds CBD cannelle — prix mini",
+    effects: ["Détente légère", "Confort", "Quotidien"],
+    smokellierQuote: "Double Cinnamon en small buds — le luxe accessible au quotidien.",
+    badge: "PRIX MINI", rating: 4.1, reviewCount: 112, intensity: 2,
+    image: "/placeholder-product.svg",
+    prices: [
+      { label: "5g", amount: 9.90, grams: 5 }, { label: "10g", amount: 17.90, grams: 10 },
+      { label: "25g", amount: 39.90, grams: 25 }, { label: "50g", amount: 69.90, grams: 50 },
+      { label: "100g", amount: 119.00, grams: 100 },
+    ],
+    inStock: true, isBestSeller: true,
+  },
+  {
+    id: 8, name: "Fat Banana", slug: "fat-banana",
+    category: "Fleur CBD", categorySlug: "fleurs-cbd",
+    description: "Fleur CBD Fat Banana. Notes de banane mûre, terre et douceur sucrée. Le compromis parfait qualité-prix.",
+    shortDesc: "Fleur CBD aux notes de banane sucrée",
+    effects: ["Relaxation", "Gourmandise", "Bonne humeur"],
+    smokellierQuote: "Fat Banana — grosse saveur, grosse détente, petit prix.",
+    rating: 4.3, reviewCount: 55, intensity: 3,
+    image: "/placeholder-product.svg",
+    prices: [
+      { label: "1g", amount: 5.90, grams: 1 }, { label: "3g", amount: 14.90, grams: 3 },
+      { label: "5g", amount: 24.90, grams: 5 }, { label: "10g", amount: 44.90, grams: 10 },
+      { label: "50g", amount: 189.00, grams: 50 },
+    ],
+    inStock: true,
+  },
+  {
+    id: 9, name: "Wapanga — 50% D10", slug: "wapanga-d10",
+    category: "Fleur D10", categorySlug: "fleurs-d10",
+    description: "Fleur enrichie au Delta-10 à 50%. Arômes exotiques et boisés avec un effet stimulant et créatif.",
+    shortDesc: "Fleur enrichie 50% Delta-10 — exotique",
+    effects: ["Stimulation", "Créativité", "Euphorie"],
+    smokellierQuote: "Wapanga D10 — 50% de puissance, 100% de voyage.",
+    badge: "D10 50%", rating: 4.5, reviewCount: 34, intensity: 4,
+    image: "/placeholder-product.svg",
+    prices: [
+      { label: "1g", amount: 8.90, grams: 1 }, { label: "3g", amount: 22.90, grams: 3 },
+      { label: "5g", amount: 34.90, grams: 5 }, { label: "10g", amount: 64.90, grams: 10 },
+    ],
+    inStock: true, isNew: true,
+  },
+  {
+    id: 10, name: "Zoap — 50% D10", slug: "zoap-d10",
+    category: "Fleur D10", categorySlug: "fleurs-d10",
+    description: "Zoap enrichie à 50% de Delta-10. Saveur savonneuse unique, notes florales. Top-shelf pour connaisseurs.",
+    shortDesc: "Fleur top-shelf 50% D10 — saveur unique",
+    effects: ["Euphorie", "Relaxation", "Créativité"],
+    smokellierQuote: "Zoap D10 — propre comme du savon, puissante comme un ouragan.",
+    badge: "TOP-SHELF", rating: 4.8, reviewCount: 28, intensity: 5,
+    image: "/placeholder-product.svg",
+    prices: [
+      { label: "1g", amount: 10.90, grams: 1 }, { label: "3g", amount: 27.90, grams: 3 },
+      { label: "5g", amount: 44.90, grams: 5 }, { label: "10g", amount: 79.90, grams: 10 },
+    ],
+    inStock: true, isNew: true, isBestSeller: true,
+  },
+  {
+    id: 11, name: "White Widow — 50% D10", slug: "white-widow-d10",
+    category: "Fleur D10", categorySlug: "fleurs-d10",
+    description: "La légendaire White Widow enrichie à 50% de Delta-10. Trichomes cristallins, arômes terreux et épicés.",
+    shortDesc: "White Widow enrichie 50% D10",
+    effects: ["Euphorie", "Énergie", "Focus"],
+    smokellierQuote: "White Widow D10 — la légende n'a jamais été aussi puissante.",
+    badge: "TOP-SHELF", rating: 4.7, reviewCount: 41, intensity: 5,
+    image: "/placeholder-product.svg",
+    prices: [
+      { label: "1g", amount: 10.90, grams: 1 }, { label: "3g", amount: 27.90, grams: 3 },
+      { label: "5g", amount: 44.90, grams: 5 }, { label: "10g", amount: 79.90, grams: 10 },
+    ],
+    inStock: true,
+  },
+  {
+    id: 12, name: "Soul Assassin — 50% D10", slug: "soul-assassin-d10",
+    category: "Fleur D10", categorySlug: "fleurs-d10",
+    description: "Soul Assassin enrichie au Delta-10 à 50%. Arômes diesel, pin et terre. Effet relaxant et méditatif.",
+    shortDesc: "Fleur D10 50% — diesel et relaxante",
+    effects: ["Relaxation", "Méditation", "Calme"],
+    smokellierQuote: "Soul Assassin — elle assassine le stress, pas ton portefeuille.",
+    rating: 4.4, reviewCount: 29, intensity: 4,
+    image: "/placeholder-product.svg",
+    prices: [
+      { label: "1g", amount: 7.90, grams: 1 }, { label: "3g", amount: 19.90, grams: 3 },
+      { label: "5g", amount: 29.90, grams: 5 }, { label: "10g", amount: 54.90, grams: 10 },
+    ],
+    inStock: true,
+  },
+  {
+    id: 13, name: "Royal Dwarf — 50% D10", slug: "royal-dwarf-d10",
+    category: "Fleur D10", categorySlug: "fleurs-d10",
+    description: "Royal Dwarf enrichie à 50% de Delta-10. Entrée de gamme D10 au meilleur rapport qualité-prix.",
+    shortDesc: "Fleur D10 50% entrée de gamme",
+    effects: ["Détente", "Bonne humeur", "Quotidien"],
+    smokellierQuote: "Royal Dwarf — petit par la taille, royal par l'effet.",
+    badge: "BON PLAN", rating: 4.2, reviewCount: 56, intensity: 3,
+    image: "/placeholder-product.svg",
+    prices: [
+      { label: "1g", amount: 6.90, grams: 1 }, { label: "3g", amount: 17.90, grams: 3 },
+      { label: "5g", amount: 27.90, grams: 5 }, { label: "10g", amount: 49.90, grams: 10 },
+    ],
+    inStock: true,
+  },
+  {
+    id: 14, name: "Snow White — 60% D10", slug: "snow-white-d10",
+    category: "Fleur D10", categorySlug: "fleurs-d10",
+    description: "Snow White enrichie à 60% de Delta-10 — la plus concentrée de la gamme. Effets puissants, notes fraîches et mentholées.",
+    shortDesc: "Fleur D10 60% — la plus puissante",
+    effects: ["Euphorie intense", "Relaxation profonde", "Créativité"],
+    smokellierQuote: "Snow White 60% D10 — la plus blanche, la plus puissante.",
+    badge: "D10 60%", rating: 4.9, reviewCount: 22, intensity: 5,
+    image: "/placeholder-product.svg",
+    prices: [
+      { label: "1g", amount: 9.90, grams: 1 }, { label: "3g", amount: 24.90, grams: 3 },
+      { label: "5g", amount: 39.90, grams: 5 }, { label: "10g", amount: 69.90, grams: 10 },
+    ],
+    inStock: true, isNew: true,
+  },
+  {
+    id: 15, name: "Silk Road — 50% D10", slug: "silk-road-d10",
+    category: "Résine D10", categorySlug: "resines-d10",
+    description: "Résine Silk Road enrichie à 50% de Delta-10. Texture souple et parfumée. Notes orientales et épicées.",
+    shortDesc: "Résine D10 50% — orientale et épicée",
+    effects: ["Relaxation", "Méditation", "Bien-être"],
+    smokellierQuote: "Silk Road — le chemin de la soie mène droit à la détente.",
+    badge: "RÉSINE D10", rating: 4.6, reviewCount: 33, intensity: 4,
+    image: "/placeholder-product.svg",
+    prices: [
+      { label: "1g", amount: 8.90, grams: 1 }, { label: "3g", amount: 22.90, grams: 3 },
+      { label: "5g", amount: 34.90, grams: 5 }, { label: "10g", amount: 64.90, grams: 10 },
+    ],
+    inStock: true,
+  },
+  {
+    id: 16, name: "Atlas Cargo — 50% D10", slug: "atlas-cargo-d10",
+    category: "Résine D10", categorySlug: "resines-d10",
+    description: "Résine Atlas Cargo enrichie à 50% de Delta-10. Style marocain traditionnel avec la puissance du D10.",
+    shortDesc: "Résine D10 50% — style marocain",
+    effects: ["Relaxation profonde", "Nostalgie", "Confort"],
+    smokellierQuote: "Atlas Cargo — du Maroc à Strasbourg, la cargaison premium.",
+    badge: "RÉSINE D10", rating: 4.5, reviewCount: 27, intensity: 4,
+    image: "/placeholder-product.svg",
+    prices: [
+      { label: "1g", amount: 8.90, grams: 1 }, { label: "3g", amount: 22.90, grams: 3 },
+      { label: "5g", amount: 34.90, grams: 5 }, { label: "10g", amount: 64.90, grams: 10 },
+    ],
+    inStock: true,
+  },
+  {
+    id: 17, name: "Early Girl — 30% OH+", slug: "early-girl-oh",
+    category: "Fleur OH+", categorySlug: "fleurs-oh",
+    description: "Early Girl enrichie à 30% de OH+ (Hydroxy-HHC). Terpènes mûrs et complexes. Notes terreuses et sucrées.",
+    shortDesc: "Fleur OH+ 30% — terreuse et puissante",
+    effects: ["Relaxation", "Euphorie", "Sommeil"],
+    smokellierQuote: "Early Girl OH+ — elle arrive tôt, mais frappe fort.",
+    badge: "OH+ 30%", rating: 4.5, reviewCount: 19, intensity: 4,
+    image: "/placeholder-product.svg",
+    prices: [
+      { label: "1g", amount: 8.90, grams: 1 }, { label: "3g", amount: 22.90, grams: 3 },
+      { label: "5g", amount: 34.90, grams: 5 }, { label: "10g", amount: 64.90, grams: 10 },
+    ],
+    inStock: true, isNew: true,
+  },
+  {
+    id: 18, name: "Oreoz — 30% OH+", slug: "oreoz-oh",
+    category: "Fleur OH+", categorySlug: "fleurs-oh",
+    description: "Oreoz enrichie à 30% de OH+. Goût biscuit chocolat-crème. Dense, résineuse, effet puissant et gourmand.",
+    shortDesc: "Fleur OH+ 30% — goût biscuit chocolat",
+    effects: ["Euphorie", "Gourmandise", "Relaxation"],
+    smokellierQuote: "Oreoz OH+ — le biscuit qui te met bien.",
+    badge: "OH+ 30%", rating: 4.7, reviewCount: 24, intensity: 4,
+    image: "/placeholder-product.svg",
+    prices: [
+      { label: "1g", amount: 9.90, grams: 1 }, { label: "3g", amount: 24.90, grams: 3 },
+      { label: "5g", amount: 39.90, grams: 5 }, { label: "10g", amount: 69.90, grams: 10 },
+    ],
+    inStock: true, isNew: true, isBestSeller: true,
+  },
+  {
+    id: 19, name: "Vape Pen 2ml 99% OH+ — Cherry Sour", slug: "vape-oh-cherry-sour",
+    category: "Vape OH+", categorySlug: "vapes",
+    description: "Vape pen jetable 2ml concentrée à 99% de OH+. Saveur Cherry Sour acidulée. ~800 bouffées.",
+    shortDesc: "Vape jetable 2ml 99% OH+ — cerise acidulée",
+    effects: ["Effet immédiat", "Euphorie", "Portabilité"],
+    smokellierQuote: "Cherry Sour en vape OH+ — l'acidulé qui frappe en une bouffée.",
+    badge: "99% OH+", rating: 4.6, reviewCount: 42, intensity: 5,
+    image: "/placeholder-product.svg",
+    prices: [{ label: "1 Vape Pen", amount: 34.90 }],
+    inStock: true, isNew: true,
+  },
+  {
+    id: 20, name: "Vape Pen 2ml 99% OH+ — Cotton Candy", slug: "vape-oh-cotton-candy",
+    category: "Vape OH+", categorySlug: "vapes",
+    description: "Vape pen jetable 2ml à 99% de OH+. Saveur Cotton Candy sucrée. ~800 bouffées.",
+    shortDesc: "Vape jetable 2ml 99% OH+ — barbe à papa",
+    effects: ["Effet immédiat", "Douceur", "Relaxation"],
+    smokellierQuote: "Cotton Candy OH+ — la barbe à papa version adulte.",
+    badge: "99% OH+", rating: 4.5, reviewCount: 38, intensity: 5,
+    image: "/placeholder-product.svg",
+    prices: [{ label: "1 Vape Pen", amount: 34.90 }],
+    inStock: true,
+  },
+  {
+    id: 21, name: "Vape Pen 2ml 99% OH+ — Kiwi Sorbet", slug: "vape-oh-kiwi-sorbet",
+    category: "Vape OH+", categorySlug: "vapes",
+    description: "Vape pen jetable 2ml à 99% de OH+. Saveur Kiwi Sorbet fraîche et givrée. ~800 bouffées.",
+    shortDesc: "Vape jetable 2ml 99% OH+ — kiwi givré",
+    effects: ["Effet immédiat", "Fraîcheur", "Euphorie"],
+    smokellierQuote: "Kiwi Sorbet — un sorbet glacé qui monte à la tête.",
+    badge: "99% OH+", rating: 4.4, reviewCount: 31, intensity: 5,
+    image: "/placeholder-product.svg",
+    prices: [{ label: "1 Vape Pen", amount: 34.90 }],
+    inStock: true,
+  },
+  {
+    id: 22, name: "Vape Pen 2ml 99% OH+ — Lemon Cheese", slug: "vape-oh-lemon-cheese",
+    category: "Vape OH+", categorySlug: "vapes",
+    description: "Vape pen jetable 2ml à 99% de OH+. Saveur Lemon Cheese citronnée et fromagère. ~800 bouffées.",
+    shortDesc: "Vape jetable 2ml 99% OH+ — citron cheese",
+    effects: ["Effet immédiat", "Euphorie", "Créativité"],
+    smokellierQuote: "Lemon Cheese en vape — citron et fromage n'ont jamais aussi bien marché ensemble.",
+    badge: "99% OH+", rating: 4.6, reviewCount: 35, intensity: 5,
+    image: "/placeholder-product.svg",
+    prices: [{ label: "1 Vape Pen", amount: 34.90 }],
+    inStock: true,
+  },
+  {
+    id: 23, name: "Vape Pen 2ml 99% HEC10 — Cherry Sour", slug: "vape-hec10-cherry-sour",
+    category: "Vape HEC10", categorySlug: "vapes",
+    description: "Vape pen jetable 2ml à 99% de HEC10. Cherry Sour intense et acidulée. ~800 bouffées.",
+    shortDesc: "Vape jetable 2ml 99% HEC10 — cerise acidulée",
+    effects: ["Effet immédiat", "Puissance", "Relaxation"],
+    smokellierQuote: "HEC10 Cherry Sour — la nouvelle génération frappe à ta porte.",
+    badge: "HEC10", rating: 4.5, reviewCount: 18, intensity: 5,
+    image: "/placeholder-product.svg",
+    prices: [{ label: "1 Vape Pen", amount: 34.90 }],
+    inStock: true, isNew: true,
+  },
+  {
+    id: 24, name: "Vape Pen 2ml 99% HEC10 — Cotton Candy", slug: "vape-hec10-cotton-candy",
+    category: "Vape HEC10", categorySlug: "vapes",
+    description: "Vape pen jetable 2ml à 99% de HEC10. Cotton Candy douce et sucrée. ~800 bouffées.",
+    shortDesc: "Vape jetable 2ml 99% HEC10 — barbe à papa",
+    effects: ["Effet immédiat", "Douceur", "Bien-être"],
+    smokellierQuote: "HEC10 Cotton Candy — sucrée dehors, puissante dedans.",
+    badge: "HEC10", rating: 4.4, reviewCount: 15, intensity: 5,
+    image: "/placeholder-product.svg",
+    prices: [{ label: "1 Vape Pen", amount: 34.90 }],
+    inStock: true, isNew: true,
+  },
+  {
+    id: 25, name: "Vape Pen 2ml 99% HEC10 — Kiwi Sorbet", slug: "vape-hec10-kiwi-sorbet",
+    category: "Vape HEC10", categorySlug: "vapes",
+    description: "Vape pen jetable 2ml à 99% de HEC10. Kiwi Sorbet frais et givré. ~800 bouffées.",
+    shortDesc: "Vape jetable 2ml 99% HEC10 — kiwi givré",
+    effects: ["Effet immédiat", "Fraîcheur", "Énergie"],
+    smokellierQuote: "HEC10 Kiwi — un sorbet qui te donne des ailes.",
+    badge: "HEC10", rating: 4.3, reviewCount: 12, intensity: 5,
+    image: "/placeholder-product.svg",
+    prices: [{ label: "1 Vape Pen", amount: 34.90 }],
+    inStock: true, isNew: true,
+  },
+  {
+    id: 26, name: "Vape Pen 2ml 99% HEC10 — Lemon Cheese", slug: "vape-hec10-lemon-cheese",
+    category: "Vape HEC10", categorySlug: "vapes",
+    description: "Vape pen jetable 2ml à 99% de HEC10. Lemon Cheese citronnée. ~800 bouffées.",
+    shortDesc: "Vape jetable 2ml 99% HEC10 — citron cheese",
+    effects: ["Effet immédiat", "Euphorie", "Focus"],
+    smokellierQuote: "HEC10 Lemon Cheese — l'acidité qui réveille.",
+    badge: "HEC10", rating: 4.4, reviewCount: 14, intensity: 5,
+    image: "/placeholder-product.svg",
+    prices: [{ label: "1 Vape Pen", amount: 34.90 }],
+    inStock: true, isNew: true,
+  },
+  {
+    id: 27, name: "Huile Full Spectrum 20% BIO", slug: "huile-fs-20-bio",
+    category: "Huile CBD", categorySlug: "huiles-cbd",
+    description: "Huile CBD Full Spectrum 20% BIO par Trycome. Base huile de coco de chanvre. Flacon 10ml pipette.",
+    shortDesc: "Huile CBD 20% Full Spectrum BIO — 10ml",
+    effects: ["Relaxation", "Sommeil", "Anti-douleur"],
+    smokellierQuote: "L'huile 20% BIO — la douceur du coco, la puissance du full spectrum.",
+    badge: "BIO", rating: 4.7, reviewCount: 73, intensity: 3,
+    image: "/placeholder-product.svg",
+    prices: [{ label: "Flacon 10ml", amount: 39.90 }],
+    inStock: true, isBestSeller: true,
+  },
+  {
+    id: 28, name: "Huile Full Spectrum 30% BIO", slug: "huile-fs-30-bio",
+    category: "Huile CBD", categorySlug: "huiles-cbd",
+    description: "Huile CBD Full Spectrum 30% BIO par Trycome. Concentration maximale. Flacon 10ml pipette.",
+    shortDesc: "Huile CBD 30% Full Spectrum BIO — 10ml",
+    effects: ["Relaxation profonde", "Sommeil", "Anti-douleur intense"],
+    smokellierQuote: "L'huile 30% BIO — la dose ultime pour les connaisseurs.",
+    badge: "BIO PREMIUM", rating: 4.8, reviewCount: 48, intensity: 4,
+    image: "/placeholder-product.svg",
+    prices: [{ label: "Flacon 10ml", amount: 49.90 }],
+    inStock: true,
+  },
+];
+
+export const categories = [
+  { name: "Tous", slug: "all", emoji: "🏠" },
+  { name: "Gummies D9", slug: "gummies-d9", emoji: "🍬" },
+  { name: "Fleurs CBD", slug: "fleurs-cbd", emoji: "🌿" },
+  { name: "Fleurs D10", slug: "fleurs-d10", emoji: "💎" },
+  { name: "Résines D10", slug: "resines-d10", emoji: "🧱" },
+  { name: "Fleurs OH+", slug: "fleurs-oh", emoji: "⚡" },
+  { name: "Vapes", slug: "vapes", emoji: "💨" },
+  { name: "Huiles CBD", slug: "huiles-cbd", emoji: "🫧" },
+];
+```
+
+## FIREBASE AUTH — lib/firebase.ts
+
+Configuration ROBUSTE : le site ne crashe JAMAIS si Firebase n'est pas configuré.
+
+```typescript
+import { initializeApp, getApps, FirebaseApp } from 'firebase/app';
+import { getAuth, GoogleAuthProvider, Auth } from 'firebase/auth';
+import { getFirestore, Firestore } from 'firebase/firestore';
+
+let app: FirebaseApp | null = null;
+let auth: Auth | null = null;
+let db: Firestore | null = null;
+let googleProvider: GoogleAuthProvider | null = null;
+
+const firebaseConfig = {
+  apiKey: import.meta.env.VITE_FIREBASE_API_KEY,
+  authDomain: import.meta.env.VITE_FIREBASE_AUTH_DOMAIN,
+  projectId: import.meta.env.VITE_FIREBASE_PROJECT_ID,
+  storageBucket: import.meta.env.VITE_FIREBASE_STORAGE_BUCKET,
+  messagingSenderId: import.meta.env.VITE_FIREBASE_MESSAGING_SENDER_ID,
+  appId: import.meta.env.VITE_FIREBASE_APP_ID,
+};
+
+export const isFirebaseConfigured = Boolean(firebaseConfig.apiKey && firebaseConfig.projectId);
+
+if (isFirebaseConfigured && getApps().length === 0) {
+  try {
+    app = initializeApp(firebaseConfig);
+    auth = getAuth(app);
+    db = getFirestore(app);
+    googleProvider = new GoogleAuthProvider();
+    googleProvider.setCustomParameters({ prompt: 'select_account' });
+  } catch (e) {
+    console.warn('Firebase init failed:', e);
+  }
+}
+
+export { app, auth, db, googleProvider };
+```
+
+Crée lib/AuthContext.tsx avec :
+- useAuth() hook
+- signInWithGoogle() — popup Google
+- signInWithEmail(email, password)
+- signUpWithEmail(email, password, displayName)
+- logout()
+- user, loading, error states
+- Messages d'erreur en français (email déjà utilisé, mdp trop faible, etc.)
+- Si Firebase pas configuré → tout retourne gracieusement sans crasher
+
+Crée lib/CartContext.tsx avec :
+- addToCart(product, selectedPrice, quantity)
+- removeFromCart(id)
+- updateQuantity(id, qty)
+- clearCart()
+- cartItems, cartTotal, cartCount
+- Persistance localStorage clé "cannazen-cart"
+
+## PAGES À CRÉER
+
+### / (Accueil)
+- Hero section : "CannaZen — L'Excellence du Cannabis Légal" avec CTA "Découvrir la boutique"
+- Bandeau "THC < 0.3% • 100% Légal • Livraison offerte dès 49€ • Cannabis d'exception cultivé avec soin"
+- Section "Best-sellers" : 4 produits isBestSeller=true
+- Section "Nouveautés" : 4 produits isNew=true
+- Section catégories avec les 7 catégories en cards cliquables
+
+### /boutique
+- Barre de recherche
+- Filtres par catégorie (boutons horizontaux scrollables)
+- Grille de produits 2 col mobile / 3 col tablet / 4 col desktop
+- ProductCard : image, badge, nom, catégorie, prix "à partir de X€", rating étoiles, bouton "Voir"
+- Animation hover sur les cards
+
+### /boutique/:slug (Fiche produit)
+- Image grande
+- Nom, badge, catégorie
+- Rating + nb avis
+- Description complète
+- Effets (tags/badges)
+- Barre intensité (1-5 barres colorées)
+- Sélecteur grammage/format (boutons radio)
+- Prix dynamique selon grammage
+- Sélecteur quantité
+- Bouton "Ajouter au panier" vert
+- Citation du Smokellier en italique avec emoji 💨
+- Section "Vous aimerez aussi" (4 produits même catégorie)
+
+### /connexion
+- Card centrée sur fond dark
+- Logo CannaZen en haut
+- 2 onglets : Connexion / Inscription
+- Connexion : bouton Google + formulaire email/mdp + lien "Mot de passe oublié"
+- Inscription : bouton Google + formulaire (nom, email, mdp, confirmer mdp) + checkbox CGV
+- Erreurs en rouge sous les champs
+- Si Firebase pas configuré : message "Connexion bientôt disponible" au lieu de crasher
+- Après connexion → redirect accueil
+
+### /compte (protégé — redirect si pas connecté)
+- Nom, email, photo Google si dispo
+- Lien "Mes commandes"
+- Bouton déconnexion
+
+### /checkout
+- Si panier vide → redirect boutique
+- 2 colonnes desktop / 1 colonne mobile
+- Formulaire : infos perso (pré-rempli si connecté), adresse livraison, choix livraison (standard 4.90€ gratuit dès 49€ / express 9.90€)
+- Choix paiement : Carte (PayGreen) / Virement bancaire
+- Récap panier à droite
+- Bouton "Confirmer"
+- Si pas de clé PayGreen → mode sandbox (confirme directement, bandeau jaune "MODE TEST")
+- Sauvegarde commande Firestore si connecté, sinon localStorage
+
+### /checkout/confirmation/:id
+- Icône ✓ animée, numéro CZ-XXXX, récap, boutons
+
+### /compte/commandes (protégé)
+- Liste des commandes avec badge statut couleur
+
+### Pages légales (/cgv, /mentions-legales, /politique-de-confidentialite)
+- Contenu réel (pas lorem ipsum)
+- CannaZen — Benkiran Hatim, 11 rue de Tourraine, 67100 Strasbourg
+- contact@cannazen.space
+
+## LE SMOKELLIER — Chatbot
+
+Widget chat flottant en bas à droite :
+- Bouton rond 56px gradient vert avec icône chat
+- Fenêtre 380x500px (full-width mobile)
+- Header "Le Smokellier 💨" + badge "En ligne"
+- Messages bot (fond #1a1a1a) et user (fond vert)
+- Réponses pré-programmées par mots-clés (fonctionne SANS clé API) :
+  - détente/relax/sommeil → recommande Mint Kush, Oreoz OH+, huiles
+  - puissant/fort → recommande Zoap D10, Snow White D10, vapes OH+
+  - pas cher/budget → recommande Small Buds, Tropical Punch, Runtz
+  - gummy/bonbon → recommande Cookies® D9
+  - vape → recommande les 8 vapes
+  - huile → recommande les 2 huiles Trycome
+  - résine/hash → recommande Silk Road, Atlas Cargo
+  - d10/delta-10 → recommande la gamme D10
+  - oh+/hydroxy → recommande la gamme OH+
+  - cbd/débutant → recommande Tropical Punch, Runtz, huile 20%
+  - meilleur/top → recommande Zoap D10, Oreoz OH+, Amnesia Haze, Cookies®
+  - livraison → infos livraison Colissimo
+- Quand le bot recommande des produits → mini-cards cliquables sous le message
+- 4 boutons suggestion au lancement : "🌿 Fleurs", "💎 Nouveautés D10", "💨 Vapes", "🤔 Conseille-moi"
+
+## AGE GATE
+- Modal plein écran au premier visit
+- "Avez-vous plus de 18 ans ?"
+- Bouton "Oui" (ferme, stocke localStorage) / "Non" (redirige google.com)
+- Logo CannaZen centré
+
+## HEADER
+- Logo "CannaZen" à gauche
+- Navigation : Accueil, Boutique, À propos
+- À droite : icône recherche, icône compte (+ dropdown si connecté), icône panier avec compteur
+- Bandeau promo en haut : "Livraison offerte dès 49€ • THC < 0.3% • 100% Légal"
+- Menu hamburger sur mobile
+- Sticky en haut
+
+## FOOTER
+- Logo, liens navigation, liens légaux, réseaux sociaux (placeholder)
+- "© 2026 CannaZen — Tous droits réservés"
+- "Cannabis légal • THC < 0.3% • Livraison France"
+
+## CART DRAWER
+- Slide-in depuis la droite quand on clique panier
+- Liste items avec image, nom, grammage, qté modifiable, prix, bouton supprimer
+- Sous-total, livraison (gratuit dès 49€ sinon 4.90€), total
+- Bouton "Commander" → /checkout
+- Si vide : message + bouton boutique
+
+## .env.example
+```
+VITE_FIREBASE_API_KEY=
+VITE_FIREBASE_AUTH_DOMAIN=
+VITE_FIREBASE_PROJECT_ID=
+VITE_FIREBASE_STORAGE_BUCKET=
+VITE_FIREBASE_MESSAGING_SENDER_ID=
+VITE_FIREBASE_APP_ID=
+VITE_PAYGREEN_SHOP_ID=
+VITE_SITE_URL=https://cannazen.space
+```
+
+## VÉRIFICATIONS OBLIGATOIRES
+
+Avant de terminer :
+1. npm run build DOIT passer sans erreur
+2. Le site s'affiche MÊME sans Firebase (mode invité)
+3. Le site s'affiche MÊME sans PayGreen (mode sandbox)
+4. Le Smokellier fonctionne MÊME sans clé API
+5. TOUTES les pages sont responsive mobile
+6. AUCUNE clé API en dur dans le code
+7. Le panier fonctionne (ajouter, modifier qté, supprimer, persiste au rechargement)
+8. La navigation entre pages fonctionne
+9. Le design est cohérent : dark theme #0a0a0a, accent vert #22c55e, cards #111111
+10. AUCUNE erreur dans la console navigateur

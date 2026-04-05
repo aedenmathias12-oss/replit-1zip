@@ -1,0 +1,8 @@
+uploads = []
+generated = []
+
+[[outputs]]
+id = "wqicvJ5nXnAnU4jWmczcq"
+uri = "file://exports/cannazen-site.tar.gz"
+type = "unspecified"
+title = "CannaZen - Site complet (tar.gz)"

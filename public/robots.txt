@@ -1,0 +1,7 @@
+User-agent: *
+Allow: /
+Disallow: /compte
+Disallow: /checkout
+Disallow: /connexion
+
+Sitemap: https://cannazen.space/sitemap.xml

@@ -1,0 +1,255 @@
+You are working on CannaZen, a CBD e-commerce website.
+Everything below is already configured. Just complete and fix.
+
+=== CREDENTIALS (already configured, do not change) ===
+
+Supabase:
+- URL: https://wsfufhzdxhqimbokxwcw.supabase.co
+- Anon key: sb_publishable_iFHuddg53-NTSxu3YTuw-w_LvcgsDVE
+- Project ID: wsfufhzdxhqimbokxwcw
+
+Mollie payment:
+- Test key: test_rNAJUpSxpzsFDAsGMR2DtVMUnJUf5T
+
+Google OAuth:
+- Client ID: 532835485565-feobtrl5qn0ocfe3g8pnnl6847qfgfj.apps.googleusercontent.com
+- Callback URL: https://wsfufhzdxhqimbokxwcw.supabase.co/auth/v1/callback
+
+Deployment:
+- GitHub repo: https://github.com/aedenmathias5-beep/canna-zen-
+- Netlify URL: https://cannazen2.netlify.app
+- Domain: https://cannazen.fun
+- Netlify project name: cannazen2
+
+Shipping:
+- Mondial Relay standard: 3.90€
+- Mondial Relay express: 5.90€
+- Colissimo domicile: 6.90€
+- Colissimo express: 9.90€
+- Free shipping above 49€
+
+=== WHAT IS ALREADY DONE ===
+
+- React + Vite + TypeScript project
+- Supabase Auth with Google OAuth
+- Cart system with Supabase + localStorage
+- Checkout page with 3 steps
+- Order confirmation page
+- Mollie payment service
+- Shipping service
+- CartDrawer component
+- AuthCallback page
+- Supabase tables: orders, carts, products, profiles
+- Netlify deployment connected to GitHub
+- Domain cannazen.fun connected to Netlify
+
+=== WHAT NEEDS TO BE FIXED ===
+
+FIX 1 - BLANK PAGE ON NETLIFY
+Create .env.production in root folder:
+VITE_SUPABASE_URL=https://wsfufhzdxhqimbokxwcw.supabase.co
+VITE_SUPABASE_ANON_KEY=sb_publishable_iFHuddg53-NTSxu3YTuw-w_LvcgsDVE
+VITE_MOLLIE_API_KEY=test_rNAJUpSxpzsFDAsGMR2DtVMUnJUf5T
+VITE_SITE_URL=https://cannazen.fun
+
+Open .gitignore and make sure .env.production 
+is NOT in the ignore list. Only .env should be ignored.
+
+FIX 2 - GOOGLE AUTH REDIRECT
+Find every Google sign-in button in:
+- src/components/auth/LoginModal.tsx
+- src/components/auth/RegisterModal.tsx
+- Any other file with Google button
+
+Replace every Google onClick with exactly:
+async () => {
+  const { data, error } = await supabase.auth.signInWithOAuth({
+    provider: 'google',
+    options: {
+      redirectTo: 'https://cannazen.fun/auth/callback'
+    }
+  })
+  if (error) console.error(error)
+  if (data?.url) window.location.href = data.url
+}
+
+FIX 3 - SUPABASE CLIENT
+Rewrite src/lib/supabase.ts:
+import { createClient } from '@supabase/supabase-js'
+const supabaseUrl = import.meta.env.VITE_SUPABASE_URL
+const supabaseAnonKey = import.meta.env.VITE_SUPABASE_ANON_KEY
+export const supabase = createClient(
+  supabaseUrl || 'https://wsfufhzdxhqimbokxwcw.supabase.co',
+  supabaseAnonKey || 'sb_publishable_iFHuddg53-NTSxu3YTuw-w_LvcgsDVE',
+  {
+    auth: {
+      flowType: 'implicit',
+      detectSessionInUrl: true,
+      persistSession: true,
+      autoRefreshToken: true,
+    }
+  }
+)
+
+FIX 4 - AUTH CALLBACK
+Rewrite src/pages/AuthCallback.tsx:
+import { useEffect, useState } from 'react'
+import { useNavigate } from 'react-router-dom'
+import { supabase } from '../lib/supabase'
+
+export default function AuthCallback() {
+  const navigate = useNavigate()
+  const [status, setStatus] = useState('Connexion...')
+
+  useEffect(() => {
+    const handle = async () => {
+      const hash = new URLSearchParams(
+        window.location.hash.substring(1)
+      )
+      const query = new URLSearchParams(window.location.search)
+      const accessToken = hash.get('access_token')
+      const code = query.get('code')
+
+      if (accessToken) {
+        setStatus('Token détecté...')
+        const { error } = await supabase.auth.setSession({
+          access_token: accessToken,
+          refresh_token: hash.get('refresh_token') || ''
+        })
+        if (!error) { navigate('/compte'); return }
+      }
+
+      if (code) {
+        setStatus('Code détecté...')
+        const { error } = await supabase.auth.exchangeCodeForSession(code)
+        if (!error) { navigate('/compte'); return }
+      }
+
+      const { data: { session } } = await supabase.auth.getSession()
+      if (session) { navigate('/compte'); return }
+
+      const { data: { subscription } } = supabase.auth.onAuthStateChange(
+        (event, session) => {
+          if (event === 'SIGNED_IN' && session) {
+            subscription.unsubscribe()
+            navigate('/compte')
+          }
+        }
+      )
+      setTimeout(() => {
+        subscription.unsubscribe()
+        navigate('/')
+      }, 5000)
+    }
+    handle()
+  }, [])
+
+  return (
+    <div style={{display:'flex',alignItems:'center',
+      justifyContent:'center',height:'100vh',
+      flexDirection:'column',gap:'16px'}}>
+      <div style={{width:'32px',height:'32px',
+        border:'3px solid #d1fae5',
+        borderTop:'3px solid #16a34a',
+        borderRadius:'50%',
+        animation:'spin 1s linear infinite'}}/>
+      <style>{`@keyframes spin{to{transform:rotate(360deg)}}`}</style>
+      <p style={{color:'#6b7280',fontSize:'14px'}}>{status}</p>
+    </div>
+  )
+}
+
+FIX 5 - CHECKOUT NEVER STUCK
+In src/pages/Checkout.tsx replace handlePayment:
+const handlePayment = async () => {
+  if (!user) { navigate('/connexion'); return }
+  setLoading(true)
+  setError('')
+  try {
+    const { data: order, error: orderError } = await supabase
+      .from('orders')
+      .insert({
+        user_id: user.id,
+        status: 'confirmed',
+        total_amount: orderTotal,
+        shipping_method: selectedShipping,
+        shipping_cost: shippingCost,
+        shipping_address: address,
+        items: items,
+        payment_status: 'confirmed'
+      })
+      .select()
+      .single()
+    if (orderError) throw orderError
+    clearCart()
+    navigate('/commande/confirmation/' + order.id)
+  } catch (err: any) {
+    setError(err.message || 'Erreur')
+    setLoading(false)
+  }
+}
+
+FIX 6 - AUTH CONTEXT NEVER STUCK
+In src/context/AuthContext.tsx make sure:
+useEffect(() => {
+  const timeout = setTimeout(() => setLoading(false), 3000)
+  supabase.auth.getSession().then(({ data: { session } }) => {
+    setUser(session?.user ?? null)
+    setLoading(false)
+    clearTimeout(timeout)
+  }).catch(() => setLoading(false))
+
+  const { data: { subscription } } = supabase.auth.onAuthStateChange(
+    (_event, session) => {
+      setUser(session?.user ?? null)
+      setLoading(false)
+    }
+  )
+  return () => {
+    subscription.unsubscribe()
+    clearTimeout(timeout)
+  }
+}, [])
+
+FIX 7 - ORDER STATUS
+Update Supabase orders - run this SQL:
+UPDATE public.orders 
+SET status = 'confirmed', payment_status = 'paid'
+WHERE status = 'pending' OR payment_status = 'test_mode';
+
+FIX 8 - VITE CONFIG
+Rewrite vite.config.ts:
+import { defineConfig } from 'vite'
+import react from '@vitejs/plugin-react'
+export default defineConfig({
+  plugins: [react()],
+  base: '/',
+  build: {
+    outDir: 'dist',
+    sourcemap: false,
+  },
+  server: {
+    host: '0.0.0.0',
+    port: 5001
+  }
+})
+
+FIX 9 - NETLIFY CONFIG
+Make sure netlify.toml exists in root:
+[build]
+  command = "npm run build"
+  publish = "dist"
+[[redirects]]
+  from = "/*"
+  to = "/index.html"
+  status = 200
+
+FIX 10 - PUSH EVERYTHING TO GITHUB
+git add .
+git commit -m "CannaZen complete fix - all features working"
+git push origin main --force
+
+After push Netlify will auto-deploy.
+Site will be live on https://cannazen.fun in 2 minutes.
+
+Report each fix as completed. Do not stop until all 10 fixes are done.
